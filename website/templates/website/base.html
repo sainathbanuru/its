@@ -5,8 +5,8 @@
 
         {% load staticfiles %}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'website/bootstrap.min.css' %}"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'website/style.css' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'website/css/style.css' %}"/>
         <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -18,6 +18,11 @@
         {% endblock %}
 
         <style>
+
+            a
+            {
+                font-size: 18px;
+            }
             #footer {
                 position: fixed;
                 bottom: 0;
@@ -49,14 +54,23 @@
                     <ul class = "nav navbar-nav navbar-left">
                         
                         <li><a href="{% url 'index' %}" class ="active"><span class="glyphicon glyphicon-globe"></span>&nbsp;Weather</a></li>
-                        <li><a href="{% url 'index' %}">Home</a></li>
-                        <li><a href="{% url 'news' %}">News</a></li>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                        
+                    
                     </ul>
                     
                     <ul class = "nav navbar-nav navbar-right">
-                        <li><a href="#">Log In</a></li>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'news' %}">News</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'insert' %}">Insert Data</a></li>
+                        {% if user.is_authenticated %}
+                            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;{{ user.get_full_name }}&nbsp;<span class="caret" aria-hidden="true"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-drop"><a href="{% url 'logout' %}">logout</a></li>
+                                 </ul>
+                            </li>
+                        {% else %}
+                            <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;LogIn</a></li>
+                        {% endif %}
                     </ul>
 
                 </div>

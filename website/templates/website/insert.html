@@ -1,0 +1,82 @@
+{% extends 'website/base.html' %}
+
+
+{% block middle %}
+
+	<div class = "btn-events">
+       <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#eventModal" ><span class = "glyphicon glyphicon-plus"></span>&nbsp; Add Data&nbsp;</button>
+    </div>
+
+    <div class="container">
+        <div class="modal" id="eventModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    
+                    <div class="modal-header">
+                        <button type = "button" class = "close" data-dismiss = "modal">&times;</button>
+                        <h3>Add Data</h3>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action="{% url 'insert' %}" method="post" id="addData">
+                            
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label for="course_name">Latitude </label>
+                                {{ form.latitude }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="faculty">Longitude</label>
+                                {{ form.longitude }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="credits">Temperature</label>
+                                {{ form.temperature }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="credits">Humidity</label>
+                                {{ form.humidity }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="credits">Co2</label>
+                                {{ form.co2 }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="credits">Smoke</label>
+                                {{ form.smoke }}
+                            </div>
+                        
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success" form="addData">submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <br><br>
+    <div class="container">
+        <div class="row">
+
+			{% if error_message %}
+		        <div class="alert alert-danger">{{ error_message }}</div>
+		    {% else %}
+		    	{% if message %}
+		    		<div class="alert alert-success">{{ message }}</div>
+		    	{% endif %}
+		    {% endif %}
+
+		</div>
+	</div>
+{% endblock %}

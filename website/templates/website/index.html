@@ -28,7 +28,7 @@
     </style>
  
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="60" />
+    <!--<meta http-equiv="refresh" content="60" />-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <title>Weather monitoring</title>
@@ -49,47 +49,33 @@
         function yourFunction(lat, lng, fl)
         {
 
-            var flag = 0;
+            var lat_matched, lng_matched, flag = 0;
 
-            lat = lat.toFixed(10);
-            lng = lng.toFixed(10);
-
-            console.log("Lat:");
-            console.log(lat);
-            console.log("Lng:");
-            console.log(lng);
-
+            // Precison of lat, lng: 4 decimal places
+            var int_lat = Math.floor( lat*10000 );
+            var int_lng = Math.floor( lng*10000 );
 
 
             {% for point in points %}
 
-                console.log( {{ point.latitude }} );
-                console.log( {{ point.longitude }} );
+                var l1 = Math.floor( {{ point.latitude }}*10000 );
+                var l2 = Math.floor( {{ point.longitude }}*10000 );
 
-                var l1 = {{ point.latitude }};
-                var l2 = {{ point.longitude }};
-
-                if(l1 == lat)
+                if( Math.abs( l1 - int_lat) <= 10 )
                 {
-                    console.log("Lat matched");
-                    if(l2 == lng)
-                    {   
+                    if( Math.abs( l2 - int_lng) <= 10 )
+                    {
+                        lat_matched = {{point.latitude}};
+                        lng_matched = {{point.longitude}};
                         flag = 1;
+                        window.location.href = 'redirect/'+lat_matched+'/'+lng_matched+'/'+fl+'/'
                     }
                 }
 
 
             {% endfor %}
 
-
-            console.log("Flag: " + flag);
-            if(flag == 1)
-            {
-                //window.location.href = 'redirect/'
-                $.redirect('redirect/', {'lat': lat, 'lng': lng, 'page': fl});
-            }
-                    
-            else
+            if(flag == 0)
                 alert("Select among red circles !!");
                 
         }
@@ -105,13 +91,12 @@
                     lat: 13.554653400463117,
                     lng: 80.02738224029542
                 },
-                zoom: 14
+                zoom: 13
             });
 
 
             {% for point in points %}
 
-                
                 // Drawing circles.
                 var circle = new google.maps.Circle({
                     
@@ -119,7 +104,7 @@
                     center: new google.maps.LatLng({{point.latitude}}, {{point.longitude}}),
                     fillColor: "#00FF00",
                     strokeColor: "red",
-                    radius: 15
+                    radius: 100
                 });
 
              {% endfor %}
@@ -132,6 +117,7 @@
                     lat: 13.554653400463117,
                     lng: 80.02738224029542
                 },
+
                 map: map,
                 draggable: true
             });
@@ -141,10 +127,12 @@
             google.maps.event.addListener(marker, 'dragend', function(){
                 lat = marker.getPosition().lat();
                 lng = marker.getPosition().lng();
-            });
 
+            });                
         }
+        
         window.onload = init;
+
     </script>
 
 {% endblock %}
@@ -159,6 +147,7 @@
         <table>
             <tr>
                 
+
                 <td><div style='display:inline;'><center><a href="#"  onclick="yourFunction(lat, lng, 'temp')">
                     <center><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Temperature</button></center></a>
                 </div></td>
@@ -173,7 +162,44 @@
 
                 <td><div style='display:inline;'><center><a href="#"  onclick="yourFunction(lat, lng, 'smoke')">
                     <center><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Smoke</button></center></a>
-                </div></td> 
+                </div></td>
+                
+
+
+                <!--<td><div style='display:inline;'>
+                    <center>
+                        <script>
+                            document.write('<a href = "redirect/'+lat+'/'+lng+'/temp"><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Temperature</button></a>');
+                        </script>
+                    </center>
+                </div></td>
+
+
+                <td><div style='display:inline;'>
+                    <center>
+                        <script>
+                            document.write('<a href = "redirect/'+lat+'/'+lng+'/hum"><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Humidity</button></a>');
+                        </script>
+                    </center>
+                </div></td>
+
+
+                <td><div style='display:inline;'>
+                    <center>
+                        <script>
+                            document.write('<a href = "redirect/'+lat+'/'+lng+'/co"><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Co2</button></a>');
+                        </script>
+                    </center>
+                </div></td>
+
+
+                <td><div style='display:inline;'>
+                    <center>
+                        <script>
+                            document.write('<a href = "redirect/'+lat+'/'+lng+'/smoke"><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Smoke</button></a>');
+                        </script>
+                    </center>
+                </div></td>-->
 
             </tr>
         </table>                    
