@@ -9,6 +9,7 @@ urlpatterns = [
 
     # redirect/lat/lng/page
     url(r'redirect/(?P<lat>\d+\.\d+)/(?P<lng>\d+\.\d+)/(?P<page>\w+)/', views.redirect, name="redirect"),
+    url(r'current_data/(?P<lat>\d+\.\d+)/(?P<lng>\d+\.\d+)/(?P<temp>\d+)/(?P<humid>\d+)/(?P<carbon>\d+)/(?P<smo>\d+)', views.current_data, name="data"),
     
     #url(r'^redirect', views.redirect, name="redirect"),
     url(r'^temperature/', views.temperature, name="temperature"),
@@ -16,6 +17,4 @@ urlpatterns = [
     url(r'^co2/', views.co2, name="co2"),
     url(r'^smoke/', views.smoke, name="smoke"),
     url(r'^insert/', views.insert.as_view(), name="insert"),
-    url(r'^login/', views.login_user.as_view(), name="login"),
-    url(r'^logout/', views.logout_user, name="logout"),
 ]
