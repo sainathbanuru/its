@@ -1,0 +1,355 @@
+{% extends 'website/base.html' %}
+
+{% block style_script %}
+{% endblock %}
+
+
+{% block middle %}
+
+
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    
+    
+    <script src = "http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyB6K1CFUQ1RwVJ-nyXxd6W0rfiIBe12Q" type="text/javascript"></script>
+    
+
+    {% load staticfiles %}
+    <link  rel = "stylesheet" type="text/css" href="{% static 'website/css/style.css' %}" />
+    <script type="text/javascript" src="{% static 'website/js/fusioncharts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/themes/fusioncharts.theme.fint.js' %}"></script>
+    
+    <style>
+
+        .w3-btn {
+        margin-bottom:10px;
+            font-size: 24px;
+        }
+
+        #map-canvas{
+            border: 1px solid Grey;
+            width:575px;
+            height:300px;
+        }
+
+        #chart-container {
+            width: 675px;
+            height: auto;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 30px 0;
+        }
+
+        td {
+            padding: 10px 0;
+        }
+
+    </style>
+
+
+    <script>
+
+        function draw_graph(data, caption, xAxisName, yAxisName)
+        {
+            // Changing chart info
+            var revenueChart = new FusionCharts({
+                "type": "line",
+                "renderAt": "chart-container",
+                "width": "500",
+                "height": "300",
+                "dataFormat": "json",
+                "dataSource":  {
+                    "chart": {
+                        "caption": caption,
+                        "xAxisName": xAxisName,
+                        "yAxisName": yAxisName,
+                        "theme": "fint"
+                    },   
+                    "data": data
+                }
+            });
+
+            revenueChart.render();
+        }
+
+
+
+        $(document).ready(function()
+        {
+
+
+            var xAxisName = "Hour", yAxisName = "Temperature", caption="Temperature distribution", data = [];
+            
+            {% for entry in data %}
+                data.push( {"label": {{entry.hour}}, "value": {{ entry.temperature }} } );
+                console.log({{entry.hour}});
+                console.log({{entry.temperature}} + "\n");
+            {% endfor %}
+
+
+            
+
+            $("a#1").hover(function()
+            {
+
+                var rad = document.RadioForm.radio;
+                data = [];
+                yAxisName = "Temperature";
+                caption = "Temperature distribution";
+
+                if(rad[0].checked){
+
+                    xAxisName = "Hour";
+                    {% for entry in data %}
+                        data.push( {"label": {{entry.hour}}, "value": {{ entry.temperature }} } )
+                    {% endfor %}
+
+                }
+
+                else{
+                    
+                    xAxisName = "Day";
+                    {% for entry in week_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.temperature }} } )
+                    {% endfor %}
+                }
+
+                draw_graph(data, caption, xAxisName, yAxisName);
+
+            });
+
+
+
+            $("a#2").hover(function()
+            {
+
+                var rad = document.RadioForm.radio;
+                data = [];
+                yAxisName = "Humidity";
+                caption = "Humidity distribution";
+                console.log("Stage 1");
+                console.log(rad[0].checked);
+                console.log(rad[1].checked);
+
+
+                if(rad[0].checked){
+
+                    console.log("Stage 2");
+
+                    xAxisName = "Hour";
+                    {% for entry in data %}
+                        data.push( {"label": {{entry.hour}}, "value": {{ entry.humidity }} } )
+                    {% endfor %}
+
+                }
+
+                else{
+                    
+                    xAxisName = "Day";
+                    {% for entry in week_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.humidity }} } )
+                    {% endfor %}
+                }
+
+                draw_graph(data, caption, xAxisName, yAxisName);
+
+            });
+
+
+
+            $("a#3").hover(function()
+            {
+
+                var rad = document.RadioForm.radio;
+                data = [];
+                yAxisName = "Co2";
+                caption = "Co2 distribution";
+
+                if(rad[0].checked){
+
+                    xAxisName = "Hour";
+                    {% for entry in data %}
+                        data.push( {"label": {{entry.hour}}, "value": {{ entry.co2 }} } )
+                    {% endfor %}
+
+                }
+
+                else{
+                    
+                    xAxisName = "Day";
+                    {% for entry in week_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.co2 }} } )
+                    {% endfor %}
+                }
+
+                draw_graph(data, caption, xAxisName, yAxisName);
+
+            });
+
+
+
+            $("a#4").hover(function()
+            {
+
+                var rad = document.RadioForm.radio;
+                data = [];
+                yAxisName = "Smoke";
+                caption = "Smoke distribution";
+
+                if(rad[0].checked){
+
+                    xAxisName = "Hour";
+                    {% for entry in data %}
+                        data.push( {"label": {{entry.hour}}, "value": {{ entry.smoke }} } )
+                    {% endfor %}
+
+                }
+
+                else{
+                    
+                    xAxisName = "Day";
+                    {% for entry in week_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.smoke }} } )
+                    {% endfor %}
+                }
+                draw_graph(data, caption, xAxisName, yAxisName);
+
+            });
+
+        });
+
+    </script>
+    
+    <script type="text/javascript">
+
+
+        FusionCharts.ready(function(){
+
+            var rad = document.RadioForm.radio;
+            rad[0].checked = 1;   
+
+            var xAxisName = "Hour", yAxisName = "Temperature", caption="Temperature distribution", data = [];
+            {% for entry in data %}
+                data.push( {"label": {{entry.hour}}, "value": {{ entry.temperature }} } );
+                console.log({{entry.hour}});
+                console.log({{entry.temperature}} + "\n");
+            {% endfor %}
+
+
+            var revenueChart = new FusionCharts({
+                "type": "line",
+                "renderAt": "chart-container",
+                "width": "500",
+                "height": "300",
+                "dataFormat": "json",
+                "dataSource":  {
+                    "chart": {
+                        "caption": caption,
+                        "xAxisName": xAxisName,
+                        "yAxisName": yAxisName,
+                        "theme": "fint"
+                    },   
+                    "data": data
+                }
+            });
+    
+            revenueChart.render();
+
+
+            //map
+            var map = new google.maps.Map(document.getElementById('map-canvas'),{
+                center:{
+                    lat: {{ lat }},
+                    lng: {{ lng }}
+                },
+                zoom: 15
+            });
+
+            // Drawing circles.
+            var circle = new google.maps.Circle({
+                map: map,
+                center: new google.maps.LatLng( {{lat}}, {{lng}} ),
+                fillColor: "#00FF00",
+                strokeColor: "red",
+                radius: 40
+            });
+
+            ///marker
+            var marker = new google.maps.Marker({
+                position: {
+                    lat: {{ lat }},
+                    lng: {{ lng }}
+                },
+                map: map,
+                draggable: false
+            });
+        })
+
+    </script>
+
+
+
+	<body>
+
+
+        <br><br>
+        <form action="" name="RadioForm">
+            <h4 style="margin-left: 50px;"><input type="radio" name="radio" value="1">This day
+            <input type="radio" name="radio" value="7" style="margin-left: 25px;">This week</h4>
+        </form>
+
+
+
+        <table>
+            <tr>
+                <td>
+                    <div id="map-canvas"></div>        
+                </td>
+
+                <td>
+                    <table>
+                        <tr>
+                            <div id="chart-container" style="margin-left:100px;"></div>
+                        </tr>
+                        <tr>
+                            <table> 
+                                <tr>
+                                    <td>
+                                        <a href="#" id="1">
+                                            <center><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Temperature</button></center>
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        <a href="#" id="2">
+                                            <center><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Humidity</button></center>
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        <a href="#" id="3">
+                                            <center><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Co2</button></center>
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        <a href="#" id="4">
+                                            <center><button class="w3-btn w3-white w3-border w3-border-blue w3-round-large">Smoke</button></center>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>    
+                        </tr>
+                    </table>
+                </td>
+
+            </tr>
+        </table>		
+        
+	</body>
+	    
+
+{% endblock %}

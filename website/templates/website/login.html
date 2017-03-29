@@ -1,0 +1,40 @@
+{% extends 'website/base.html' %}
+
+{% block style_script %}
+{% endblock %}
+
+
+{% block middle %}
+
+<h2 class="centerhead">LogIn</h2>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4 well">
+                <form role="form" action="{% url 'login' %}" method="post" name="loginform">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend>Login</legend>
+                        {% if error_message %}
+                            <p style="color: darkred;"><span class="glyphicon glyphicon-remove"></span>&nbsp; &nbsp;{{ error_message }}</p>
+                        {% endif %}
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="text" name="email" placeholder="Your Email" required class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pass">Password</label>
+                            <input type="password" name="pass" placeholder="Your Password" required class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" name="login" value="Login" class="btn btn-block btn-primary" />
+                        </div>
+                         </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

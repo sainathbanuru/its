@@ -3,6 +3,8 @@
    
     <head>
 
+        <title>Weather Monitoring</title>
+
         {% load staticfiles %}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="{% static 'website/css/bootstrap.min.css' %}"/>
@@ -56,10 +58,11 @@
                     
                     <ul class = "nav navbar-nav navbar-left">
                         
-                        <li><a href="{% url 'index' %}" class ="active"><span class="glyphicon glyphicon-globe"></span>&nbsp;Weather</a></li>
+                        <li><a href="{% url 'index' %}" class ="active"><h3><span class="glyphicon glyphicon-globe"></span>&nbsp;Weather</h3></a></li>
                     
                     </ul>
-                    <div class="col-sm-5 col-md-6 col-md-offset-1">
+                    
+                    <!--<div class="col-sm-5 col-md-6 col-md-offset-1">
                     <form class="navbar-form" role="search">
                     <div class="input-group input-md-5">
                         <input type="text" class="form-control " placeholder="Search" name="srch-term" id="srch-term">
@@ -68,12 +71,23 @@
                         </div>
                     </div>
                     </form>
-                    </div>                    
+                    </div> -->                   
                     <ul class = "nav navbar-nav navbar-right">
-                        <li><a href="{% url 'index' %}">Home</a></li>
-                        <li><a href="{% url 'news' %}">News</a></li>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                        <li><a href="{% url 'insert' %}">Insert Data</a></li>
+                        <li><a href="{% url 'index' %}"><h4>Home</h4></a></li>
+                        <li><a href="{% url 'news' %}"><h4>News</h4></a></li>
+                        <li><a href="{% url 'contact' %}"><h4>Contact</h4></a></li>
+                        {% if user.is_authenticated %}
+                        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;{{ user.get_full_name }}&nbsp;<span class="caret" aria-hidden="true"></span></a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-drop"><a href="{% url 'changepassword' %}">change Password</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li class="nav-drop"><a href="{% url 'userLogout' %}">logout</a></li>
+                             </ul>
+                        </li>
+                        {% else %}
+                            <li><a href="{% url 'administrator' %}"><h4>Admin</h4></a></li>
+                        {% endif %}
+
                     </ul>
 
                 </div>

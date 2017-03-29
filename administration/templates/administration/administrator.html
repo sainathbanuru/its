@@ -1,0 +1,203 @@
+{% extends 'administration/base.html' %}
+
+{% block middle %}
+
+<link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyB6K1CFUQ1RwVJ-nyXxd6W0rfiIBe12Q" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'website/js/fusioncharts.js' %}"></script>
+<script type="text/javascript" src="{% static 'website/js/themes/fusioncharts.theme.fint.js' %}"></script>
+
+<style>
+
+	#graph{
+		margin-top: 20px;
+		margin-left: 200px;
+	}
+	
+    #map-canvas{
+    	margin-left: 200px;
+        margin-top: -10px;
+        border: 0px solid Grey;
+        width:600px;
+        height:200px;
+    }
+
+    .w3-btn {
+    margin-bottom:10px;
+        font-size: 20px;
+    }
+
+</style>
+<script>
+	
+	var lati, longi;
+
+	function clicked(id)
+	{
+
+		//document.write("Hello");
+		console.log(id);
+
+		var lat = lati, lng = longi;
+		var data = [], count=0;
+		
+
+        {% for entry in full_data %}
+        	if(lat == {{ entry.latitude }} && lng == {{ entry.longitude }})
+        	{
+        		if(id == 1)
+		            data.push( {"label": count, "value": {{ entry.temperature }} } )
+		        else if(id == 2)
+		        	data.push( {"label": count, "value": {{ entry.humidity }} } )
+		        else if(id == 3)
+		        	data.push( {"label": count, "value": {{ entry.co2 }} } )
+		        else if(id == 4)
+		        	data.push( {"label": count, "value": {{ entry.smoke }} } )
+
+	            count += 1;
+	        }
+
+        {% endfor %}
+        count = 0;
+
+        var caption = "", yAxisName = "";
+        if(id == 1)
+        {
+        	caption = "Temperature distribution";
+        	yAxisName = "Temperature";
+        }
+        else if(id == 2)
+        {
+        	caption = "Humidity distribution";
+        	yAxisName = "Humidity";
+        }
+        else if(id == 3)
+        {
+        	caption = "Co2 distribution";
+        	yAxisName = "Co2";
+        }
+        else if(id == 4)
+        {
+        	caption = "Smoke distribution";
+        	yAxisName = "Smoke";
+        }
+
+
+        var revenueChart = new FusionCharts({
+            "type": "line",
+            "renderAt": "chart-container",
+            "width": "500",
+            "height": "300",
+            "dataFormat": "json",
+            "dataSource":  {
+                "chart": {
+                    "caption": caption,
+                    "xAxisName": "Time",
+                    "yAxisName": yAxisName,
+                    "theme": "fint"
+                },
+                
+                "data": data
+            }
+
+        });
+    
+        revenueChart.render();
+
+	}
+
+
+	function change(lat, lng)
+	{
+
+		lati = lat;
+		longi = lng;
+
+        console.log(lati);
+        console.log(longi);
+       
+
+		//map
+        var map = new google.maps.Map(document.getElementById('map-canvas'),{
+            center:{
+                lat: lat,
+                lng: lng
+            },
+            zoom: 13
+        });
+        
+        //marker
+        var marker = new google.maps.Marker({
+            position: {
+                lat: lat,
+                lng: lng
+            },
+
+            map: map,
+            draggable: false,
+        });
+
+        var circle = new google.maps.Circle({
+                    
+            map: map,                    
+            center: new google.maps.LatLng( lat, lng ),
+            fillColor: "#00FF00",
+            strokeColor: "red",
+            radius: 100
+        });
+
+
+        var html = "<table><tr><td><table>";
+        
+        html += "<tr><td><a href='#/$' onclick='clicked(1)'><center><button class='w3-btn w3-white w3-border w3-border-blue w3-round-large'>Temp</button></center></a></td></tr>";
+        html += "<tr><td><a href='#/$' onclick='clicked(2)'><center><button class='w3-btn w3-white w3-border w3-border-blue w3-round-large'>Hum</button></center></a></td></tr>";
+        html += "<tr><td><a href='#/$' onclick='clicked(3)'><center><button class='w3-btn w3-white w3-border w3-border-blue w3-round-large'>Co2</button></center></a></td></tr>";
+        html += "<tr><td><a href='#/$' onclick='clicked(4)'><center><button class='w3-btn w3-white w3-border w3-border-blue w3-round-large'>Smoke</button></center></a></td></tr>";
+
+        html += "</table></td>";
+        html += "<td><div id='chart-container' style='margin-left: 25px;'></div></td>";
+        html += "</tr></table>";
+        document.getElementById("graph").innerHTML = html;
+
+	}
+
+</script>
+
+<br><br>
+<table>
+	<tr>
+
+		<td>
+			
+			<h1 style="margin-left:30px;">List of all Hardware Placed: </h1><br><br>
+			
+			<ul>
+				{% for i in data %}
+
+					{# Others data #}
+					{% if i.3 == 2 %}
+						<a href="#" onclick='change({{i.1}}, {{i.2}})'><li>{{i.0}} - ({{i.1}}, {{i.2}})	[Other`s data]</li></a>
+					
+					{% else %}
+						<a href="#" onclick='change({{i.1}}, {{i.2}})'><li>{{i.0}} - ({{i.1}}, {{i.2}})</li></a>
+					{% endif %}
+				
+				{% endfor %}
+			</ul>
+		</td>
+
+		<td>
+			<div id="map-graph">
+				<table>
+					<tr><td><div id="map-canvas"></div></td></tr>
+					<tr><td><div id="graph"></div></td></tr>
+				</table>
+			</div>
+		</td>
+
+	</tr>
+</table>
+{% endblock %}

@@ -17,7 +17,7 @@
         #map-canvas{
             margin-top: 3px;
             border: 1px solid Grey;
-            width:1090px;
+            width:975px;
             height:500px;
         }
 
@@ -29,8 +29,8 @@
     </style>
  
     <meta charset="UTF-8">
-    <!--<meta http-equiv="refresh" content="60" />-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     
     <title>Weather monitoring</title>
     
@@ -48,7 +48,7 @@
         var map, marker, points = [];
 
         
-        function yourFunction(lat, lng, fl)
+        function yourFunction(lat, lng)
         {
 
             var lat_matched, lng_matched, flag = 0;
@@ -71,7 +71,7 @@
                         lat_matched = {{point.latitude}};
                         lng_matched = {{point.longitude}};
                         flag = 1;
-                        window.location.href = 'redirect/'+lat_matched+'/'+lng_matched+'/'+fl+'/'
+                        window.location.href = 'redirect/'+lat_matched+'/'+lng_matched+'/'
                     }
                 }
 
@@ -79,14 +79,60 @@
             {% endfor %}
 
             if(flag == 0)
-                alert("Select among red circles !!");
+                alert("Select among circles on the Map!!");
                 
+        }
+
+
+        function left_panel(lat, lng)
+        {
+
+            var temperature=" *", humidity=" *", co2=" *", smoke=" *";
+            var l1 = Math.floor( lat*10000 );
+            var ln1 = Math.floor( lng*10000 );
+
+            {% for point in points %}
+
+                var l2 = Math.floor( {{ point.latitude }}*10000 );
+                var ln2 = Math.floor( {{ point.longitude }}*10000 );
+
+                if( Math.abs(l1 - l2) <= 10 )
+                {
+                    if( Math.abs(ln1 - ln2) <= 10 )
+                    {
+                        temperature = {{ point.temperature }};
+                        humidity = {{ point.humidity }};
+                        co2 = {{ point.co2 }};
+                        smoke = {{ point.smoke }};
+                    }
+                }
+
+            {% endfor %}
+
+            // Changing data on left panel
+            var html = "<h3 class='centerText'> Present </h3><br>";
+            html += "<h4 style=margin-left:30px;>Temperature - " + temperature + "</h4><br>";
+            html += "<h4 style=margin-left:30px;>Humidity - " + humidity + "</h4><br>";
+            html += "<h4 style=margin-left:30px;>Co2 - " + co2 + "</h4><br>";
+            html += "<h4 style=margin-left:30px;>Smoke - " + smoke + "</h4><br>";
+
+            html += "<a href='#' onclick='yourFunction(lat, lng)'><button style=margin-left:25px; class='w3-btn w3-white w3-border w3-border-blue w3-round-large'>Get Past Data</button></a><br>";
+
+            html += "<table><tr><td><img src='/static/website/images/red.jpg' height='20' width='20'></td><td><h6>Our Own Data</h6></td></tr><tr><td><img src='/static/website/images/green.jpg' height='20' width='20'></td><td><h6>Others Data</h6></td></tr></table>"
+
+
+            document.getElementById("left-panel").innerHTML = html;
+
         }
 
 
 
         function init(){
 
+
+            left_panel(13.554653400463117, 80.02738224029542);
+
+            
             //map
             map = new google.maps.Map(document.getElementById('map-canvas'),{
                 center:{
@@ -111,8 +157,8 @@
             {% for point in points %}
 
                 
-                console.log({{ point.latitude }});
-                console.log({{ point.longitude }});
+                //console.log({{ point.latitude }});
+                //console.log({{ point.longitude }});
 
 
                 // Drawing circles.
@@ -128,11 +174,14 @@
              {% endfor %}
 
 
-            //drraged event
+            // Event when marker is drraged.
             google.maps.event.addListener(marker, 'dragend', function(){
+                
                 lat = marker.getPosition().lat();
                 lng = marker.getPosition().lng();
 
+                left_panel(lat, lng);
+                
             });                
         }
         
@@ -143,30 +192,18 @@
 {% endblock %}
 
 
+
 {% block middle %}
 
     <div class="container-fluid">
         <div class = "row">
-            <div class = "col-md-2" >
-                <div class="colHeight">
-                    <h4 class="centerText"> Present </h4>
-                    <ul>
-                        
-                        <li><a href="#" onclick="yourFunction(lat, lng, 'temp')"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Temperature</a></li>
 
-
-                        <li><a href="#"  onclick="yourFunction(lat, lng, 'hum')"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Humidity</a></li>
-
-
-                        <li><a href="#"  onclick="yourFunction(lat, lng, 'co')"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;CO2</a></li>
-
-
-                        <li><a href="#"  onclick="yourFunction(lat, lng, 'smoke')"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Smoke</a></li>
-                    </ul>
+            <div class = "col-md-3" >
+                <div class="colHeight" id="left-panel">
                 </div>
             </div>
             
-            <div class = "col-md-10">
+            <div class = "col-md-9">
                 <div class="colHeight">
                     <center><div id="map-canvas"></div><center>
                 </div>
