@@ -41,10 +41,14 @@ body {
     border: none;
 }
 
+.alert-danger{
+    width:60%;
+
+}
 
 
 .colHeight{
-    height: 600px;
+    height: 800px;
     background: white;
     margin-top: 10px;
     border-radius: 10px;
@@ -67,13 +71,25 @@ body {
     -moz-border-radius-topleft: 10px;
     -moz-border-radius-topright: 10px;
 }
+
+.centerText1{
+    text-align: center;
+    padding:0px;
+    margin-top: 10px;
+    color: white;
+    text-decoration: underline;
+    background: teal;
+    -moz-border-radius-topleft: 10px;
+    -moz-border-radius-topright: 10px;
+}
+
 .centerhead{
     text-align: center;
     text-decoration: underline;
 }
 
 footer{
-    height: 50px;
+    height: 40px;
     background: #008080;
     margin-top: 10px;
 }
@@ -132,7 +148,6 @@ footer{
 }
 .event-row .event-date{
     background: chocolate;
-    height: 160px;
     display: inline;
     border-radius: 10px ;
 }

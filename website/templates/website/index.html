@@ -45,80 +45,20 @@
 
         var lat = 13.554653400463117;
         var lng = 80.02738224029542;
-        var map, marker, points = [];
+        var map, points = [];
 
         
         function yourFunction(lat, lng)
         {
-
-            var lat_matched, lng_matched, flag = 0;
-
-            // Precison of lat, lng: 4 decimal places
-            var int_lat = Math.floor( lat*10000 );
-            var int_lng = Math.floor( lng*10000 );
-
-
-            {% for point in points %}
-
-                var l1 = Math.floor( {{ point.latitude }}*10000 );
-                var l2 = Math.floor( {{ point.longitude }}*10000 );
-
-                if( Math.abs( l1 - int_lat) <= 10 )
-                {
-                    if( Math.abs( l2 - int_lng) <= 10 )
-                    {
-
-                        lat_matched = {{point.latitude}};
-                        lng_matched = {{point.longitude}};
-                        flag = 1;
-                        window.location.href = 'redirect/'+lat_matched+'/'+lng_matched+'/'
-                    }
-                }
-
-
-            {% endfor %}
-
-            if(flag == 0)
-                alert("Select among circles on the Map!!");
-                
+            window.location.href = 'redirect/'+lat+'/'+lng+'/'
         }
 
 
-        function left_panel(lat, lng)
+        function left_panel()
         {
 
-            var temperature=" *", humidity=" *", co2=" *", smoke=" *";
-            var l1 = Math.floor( lat*10000 );
-            var ln1 = Math.floor( lng*10000 );
-
-            {% for point in points %}
-
-                var l2 = Math.floor( {{ point.latitude }}*10000 );
-                var ln2 = Math.floor( {{ point.longitude }}*10000 );
-
-                if( Math.abs(l1 - l2) <= 10 )
-                {
-                    if( Math.abs(ln1 - ln2) <= 10 )
-                    {
-                        temperature = {{ point.temperature }};
-                        humidity = {{ point.humidity }};
-                        co2 = {{ point.co2 }};
-                        smoke = {{ point.smoke }};
-                    }
-                }
-
-            {% endfor %}
-
-            // Changing data on left panel
             var html = "<h3 class='centerText'> Present </h3><br>";
-            html += "<h4 style=margin-left:30px;>Temperature - " + temperature + "</h4><br>";
-            html += "<h4 style=margin-left:30px;>Humidity - " + humidity + "</h4><br>";
-            html += "<h4 style=margin-left:30px;>Co2 - " + co2 + "</h4><br>";
-            html += "<h4 style=margin-left:30px;>Smoke - " + smoke + "</h4><br>";
-
-            html += "<a href='#' onclick='yourFunction(lat, lng)'><button style=margin-left:25px; class='w3-btn w3-white w3-border w3-border-blue w3-round-large'>Get Past Data</button></a><br>";
-
-            html += "<table><tr><td><img src='/static/website/images/red.jpg' height='20' width='20'></td><td><h6>Our Own Data</h6></td></tr><tr><td><img src='/static/website/images/green.jpg' height='20' width='20'></td><td><h6>Others Data</h6></td></tr></table>"
+            html += "<table><tr><td><img src='/static/website/images/red.jpg' height='20' width='20'></td><td><h6>Our own Data points</h6></td></tr><tr><td><img src='/static/website/images/green.jpg' height='20' width='20'></td><td><h6>Others Data points</h6></td></tr></table>";
 
 
             document.getElementById("left-panel").innerHTML = html;
@@ -126,13 +66,13 @@
         }
 
 
-
         function init(){
 
-
-            left_panel(13.554653400463117, 80.02738224029542);
-
             
+
+            left_panel();
+
+
             //map
             map = new google.maps.Map(document.getElementById('map-canvas'),{
                 center:{
@@ -142,47 +82,98 @@
                 zoom: 13
             });
             
-            //marker
-            marker = new google.maps.Marker({
-                position: {
-                    lat: 13.554653400463117,
-                    lng: 80.02738224029542
-                },
-
-                map: map,
-                draggable: true,
-            });    
+            
+            {% for point in points %}            
 
 
-            {% for point in points %}
+                //marker
+                var marker = new google.maps.Marker({
+                    position: {
+                        lat: {{ point.latitude }},
+                        lng: {{ point.longitude }}
+                    },
 
-                
-                //console.log({{ point.latitude }});
-                //console.log({{ point.longitude }});
+                    map: map,
+                    draggable: false,
+                });    
 
 
-                // Drawing circles.
-                var circle = new google.maps.Circle({
-                    
-                    map: map,                    
-                    center: new google.maps.LatLng( {{point.latitude}}, {{point.longitude}} ),
-                    fillColor: "#00FF00",
-                    strokeColor: "red",
-                    radius: 100
+                {% if point.source == 1 %}
+
+                    // Drawing circles of our own.
+                    var circle = new google.maps.Circle({
+                        
+                        map: map,
+                        center: new google.maps.LatLng( {{point.latitude}}, {{point.longitude}} ),
+                        fillColor: "#00FF00",
+                        strokeColor: "red",
+                        radius: 100
+                    });
+
+                {% else %}
+
+                    // Drawing circles of others data.
+                    var circle = new google.maps.Circle({
+                        
+                        map: map,
+                        center: new google.maps.LatLng( {{point.latitude}}, {{point.longitude}} ),
+                        fillColor: "red",
+                        strokeColor: "#00FF00",
+                        radius: 100
+                    });
+
+                {% endif %}
+
+                var infowindow = new google.maps.InfoWindow(); 
+                var content = '<b>Temperature: </b>{{point.temperature}} &#8451;<br><b>Humidity: </b>{{point.humidity}} %<br><b>Co2: </b>{{point.co2}}<br><b>Smoke: </b>{{point.smoke}}';
+                //var content = '<table><tr><td>Temperature</td><td>{{point.temperature}}</td></tr><tr><td>Humidity</td><td>{{point.humidity}}</td></tr><tr><td>Co2</td><td>{{point.co2}}</td></tr><tr><td>Smoke</td><td>{{point.smoke}}</td></tr></table>'
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    yourFunction({{ point.latitude }}, {{ point.longitude }});
                 });
+
+
+                google.maps.event.addListener(marker,'mouseover', (function(marker, content, infowindow){
+                    return function() {
+                
+                       infowindow.setContent(content);
+                       infowindow.open(map, marker);
+
+                        // Changing data on left panel
+                        var html = "<h3 class='centerText'> Present </h3><br>";
+
+                        html += "<table><tr><td><img src='/static/website/images/red.jpg' height='20' width='20'></td><td><h6>Our own Data points</h6></td></tr><tr><td><img src='/static/website/images/green.jpg' height='20' width='20'></td><td><h6>Others Data points</h6></td></tr></table><br><br>";
+
+                        html += "<h4 style=margin-left:40px;>Temperature - " + {{point.temperature}} + " &#8451;</h4><br>";
+                        html += "<h4 style=margin-left:40px;>Humidity - " + {{ point.humidity }} + " %</h4><br>";
+                        html += "<h4 style=margin-left:40px;>Co2 - " + {{ point.co2}} + "<sub> ppm</sub></h4><br>";
+                        html += "<h4 style=margin-left:40px;>Smoke - " + {{ point.smoke }} + "<sub> ppm</sub></h4><br>";
+
+
+                        document.getElementById("left-panel").innerHTML = html;
+                
+                    };
+                })(marker, content, infowindow));
+                
+
+                google.maps.event.addListener(marker,'mouseout', (function(marker, content, infowindow){
+                    return function() {
+                      
+                       infowindow.close();
+                       
+                       var html = "<h3 class='centerText'> Present </h3><br>";
+
+                       html += "<table><tr><td><img src='/static/website/images/red.jpg' height='20' width='20'></td><td><h6>Our own Data points</h6></td></tr><tr><td><img src='/static/website/images/green.jpg' height='20' width='20'></td><td><h6>Others Data points</h6></td></tr></table>"
+
+                        document.getElementById("left-panel").innerHTML = html;
+
+                    };
+                })(marker, content, infowindow));
+
 
              {% endfor %}
 
 
-            // Event when marker is drraged.
-            google.maps.event.addListener(marker, 'dragend', function(){
-                
-                lat = marker.getPosition().lat();
-                lng = marker.getPosition().lng();
-
-                left_panel(lat, lng);
-                
-            });                
         }
         
         window.onload = init;

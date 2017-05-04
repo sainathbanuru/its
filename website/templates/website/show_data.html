@@ -83,7 +83,7 @@
 
             var xAxisName = "Hour", yAxisName = "Temperature", caption="Temperature distribution", data = [];
             
-            {% for entry in data %}
+            {% for entry in day_data %}
                 data.push( {"label": {{entry.hour}}, "value": {{ entry.temperature }} } );
                 console.log({{entry.hour}});
                 console.log({{entry.temperature}} + "\n");
@@ -103,18 +103,37 @@
                 if(rad[0].checked){
 
                     xAxisName = "Hour";
-                    {% for entry in data %}
+                    {% for entry in day_data %}
                         data.push( {"label": {{entry.hour}}, "value": {{ entry.temperature }} } )
                     {% endfor %}
 
                 }
 
-                else{
-                    
+                else if(rad[1].checked){
+
                     xAxisName = "Day";
                     {% for entry in week_data %}
                         data.push( {"label": {{entry.day}}, "value": {{ entry.temperature }} } )
                     {% endfor %}
+
+                }
+
+                else if(rad[2].checked){
+
+                    xAxisName = "Day";
+                    {% for entry in month_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.temperature }} } )
+                    {% endfor %}
+
+                }
+
+                else if(rad[3].checked){
+
+                    xAxisName = "Month";
+                    {% for entry in year_data %}
+                        data.push( {"label": {{entry.month}}, "value": {{ entry.temperature }} } )
+                    {% endfor %}
+
                 }
 
                 draw_graph(data, caption, xAxisName, yAxisName);
@@ -137,21 +156,38 @@
 
                 if(rad[0].checked){
 
-                    console.log("Stage 2");
-
                     xAxisName = "Hour";
-                    {% for entry in data %}
+                    {% for entry in day_data %}
                         data.push( {"label": {{entry.hour}}, "value": {{ entry.humidity }} } )
                     {% endfor %}
 
                 }
 
-                else{
-                    
+                else if(rad[1].checked){
+
                     xAxisName = "Day";
                     {% for entry in week_data %}
                         data.push( {"label": {{entry.day}}, "value": {{ entry.humidity }} } )
                     {% endfor %}
+
+                }
+
+                else if(rad[2].checked){
+
+                    xAxisName = "Day";
+                    {% for entry in month_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.humidity }} } )
+                    {% endfor %}
+
+                }
+
+                else if(rad[3].checked){
+
+                    xAxisName = "Month";
+                    {% for entry in year_data %}
+                        data.push( {"label": {{entry.month}}, "value": {{ entry.humidity }} } )
+                    {% endfor %}
+
                 }
 
                 draw_graph(data, caption, xAxisName, yAxisName);
@@ -171,18 +207,37 @@
                 if(rad[0].checked){
 
                     xAxisName = "Hour";
-                    {% for entry in data %}
+                    {% for entry in day_data %}
                         data.push( {"label": {{entry.hour}}, "value": {{ entry.co2 }} } )
                     {% endfor %}
 
                 }
 
-                else{
-                    
+                else if(rad[1].checked){
+
                     xAxisName = "Day";
                     {% for entry in week_data %}
                         data.push( {"label": {{entry.day}}, "value": {{ entry.co2 }} } )
                     {% endfor %}
+
+                }
+
+                else if(rad[2].checked){
+
+                    xAxisName = "Day";
+                    {% for entry in month_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.co2 }} } )
+                    {% endfor %}
+
+                }
+
+                else if(rad[3].checked){
+
+                    xAxisName = "Month";
+                    {% for entry in year_data %}
+                        data.push( {"label": {{entry.month}}, "value": {{ entry.co2 }} } )
+                    {% endfor %}
+
                 }
 
                 draw_graph(data, caption, xAxisName, yAxisName);
@@ -202,19 +257,39 @@
                 if(rad[0].checked){
 
                     xAxisName = "Hour";
-                    {% for entry in data %}
+                    {% for entry in day_data %}
                         data.push( {"label": {{entry.hour}}, "value": {{ entry.smoke }} } )
                     {% endfor %}
 
                 }
 
-                else{
-                    
+                else if(rad[1].checked){
+
                     xAxisName = "Day";
                     {% for entry in week_data %}
                         data.push( {"label": {{entry.day}}, "value": {{ entry.smoke }} } )
                     {% endfor %}
+
                 }
+
+                else if(rad[2].checked){
+
+                    xAxisName = "Day";
+                    {% for entry in month_data %}
+                        data.push( {"label": {{entry.day}}, "value": {{ entry.smoke }} } )
+                    {% endfor %}
+
+                }
+
+                else if(rad[3].checked){
+
+                    xAxisName = "Month";
+                    {% for entry in year_data %}
+                        data.push( {"label": {{entry.month}}, "value": {{ entry.smoke }} } )
+                    {% endfor %}
+
+                }
+
                 draw_graph(data, caption, xAxisName, yAxisName);
 
             });
@@ -232,10 +307,10 @@
             rad[0].checked = 1;   
 
             var xAxisName = "Hour", yAxisName = "Temperature", caption="Temperature distribution", data = [];
-            {% for entry in data %}
+            {% for entry in day_data %}
                 data.push( {"label": {{entry.hour}}, "value": {{ entry.temperature }} } );
-                console.log({{entry.hour}});
-                console.log({{entry.temperature}} + "\n");
+                //console.log({{entry.hour}});
+                //console.log({{entry.temperature}} + "\n");
             {% endfor %}
 
 
@@ -268,14 +343,30 @@
                 zoom: 15
             });
 
-            // Drawing circles.
-            var circle = new google.maps.Circle({
-                map: map,
-                center: new google.maps.LatLng( {{lat}}, {{lng}} ),
-                fillColor: "#00FF00",
-                strokeColor: "red",
-                radius: 40
-            });
+
+            {% if src == 1 %}
+                
+                // Drawing circles( Our own data ).
+                var circle = new google.maps.Circle({
+                    map: map,
+                    center: new google.maps.LatLng( {{lat}}, {{lng}} ),
+                    fillColor: "#00FF00",
+                    strokeColor: "red",
+                    radius: 40
+                });
+
+            {% else %}
+
+                // Drawing circles( Other`s data ).
+                var circle = new google.maps.Circle({
+                    map: map,
+                    center: new google.maps.LatLng( {{lat}}, {{lng}} ),
+                    fillColor: "red",
+                    strokeColor: "#00FF00",
+                    radius: 40
+                });
+                
+            {% endif %}
 
             ///marker
             var marker = new google.maps.Marker({
@@ -297,8 +388,12 @@
 
         <br><br>
         <form action="" name="RadioForm">
-            <h4 style="margin-left: 50px;"><input type="radio" name="radio" value="1">This day
-            <input type="radio" name="radio" value="7" style="margin-left: 25px;">This week</h4>
+            <h4 style="margin-left: 50px;">
+                <input type="radio" name="radio" value="1">This day
+                <input type="radio" name="radio" value="7" style="margin-left: 25px;">This week
+                <input type="radio" name="radio" value="30" style="margin-left: 25px;">This month
+                <input type="radio" name="radio" value="12" style="margin-left: 25px;">This year
+            </h4>
         </form>
 
 
